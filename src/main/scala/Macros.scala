@@ -13,16 +13,15 @@ object Macros {
     val t = TypeRepr.of[A]
 
 
-    def clsOf(t: TypeRepr): Expr[Class[_]] =
-      Literal(ClassOfConstant(t)).asExpr.asInstanceOf[Expr[Class[_]]]
-
     def belongsToScalaDefault(t: TypeRepr): Boolean =
       val scalaDefaultPackages = Seq("scala.", "scala.Predef$.", "scala.util.")
       val nme = t.typeSymbol.fullName
       scalaDefaultPackages.exists(p => nme.startsWith(p))
 
+    def clsOf(t: TypeRepr): Expr[Class[_]] =
+      Literal(ClassOfConstant(t)).asInstanceOf[Expr[Class[_]]]
+
     def extract(t: TypeRepr): Expr[Class[_]] = {
-      println(s"extract ${t.getClass}")
       t match
 
         case t if t.typeSymbol.isType && t.typeSymbol.isAliasType && !belongsToScalaDefault(t) =>
@@ -41,9 +40,6 @@ object Macros {
           val typeArgs = a.args.map(extract)
           typeArgs.head
 
-        case other =>
-          println(s"other $other")
-          clsOf(other)
     }
 
 
